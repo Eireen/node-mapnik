@@ -21,6 +21,7 @@ class Layer : public Napi::ObjectWrap<Layer>
     explicit Layer(Napi::CallbackInfo const& info);
     // methods
     Napi::Value describe(Napi::CallbackInfo const& info);
+    void add_layer(Napi::CallbackInfo const& info);
     // accessors
     Napi::Value name(Napi::CallbackInfo const& info);
     void name(Napi::CallbackInfo const& info, Napi::Value const& value);
@@ -40,9 +41,12 @@ class Layer : public Napi::ObjectWrap<Layer>
     void queryable(Napi::CallbackInfo const& info, Napi::Value const& value);
     Napi::Value clear_label_cache(Napi::CallbackInfo const& info);
     void clear_label_cache(Napi::CallbackInfo const& info, Napi::Value const& value);
+    Napi::Value opacity(Napi::CallbackInfo const& info);
+    void opacity(Napi::CallbackInfo const& info, Napi::Value const& value);
     inline layer_ptr impl() const { return layer_; }
 
   private:
     static Napi::FunctionReference constructor;
     layer_ptr layer_;
 };
+
