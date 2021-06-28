@@ -36,7 +36,7 @@ Napi::Object Projection::Initialize(Napi::Env env, Napi::Object exports, napi_pr
  * @throws {Error} the projection could not be initialized - it was not found
  * in proj4's tables or the string was malformed
  * @example
- * var wgs84 = new mapnik.Projection('+init=epsg:4326');
+ * var wgs84 = new mapnik.Projection('EPSG:4326');
  */
 
 Projection::Projection(Napi::CallbackInfo const& info)
@@ -87,7 +87,7 @@ Projection::Projection(Napi::CallbackInfo const& info)
  * @param {Array<number>} position as [x, y] or extent as [minx,miny,maxx,maxy]
  * @returns {Array<number>} projected coordinates
  * @example
- * var merc = new mapnik.Projection('+init=epsg:3857');
+ * var merc = new mapnik.Projection('EPSG:3857');
  * var long_lat_coords = [-122.33517, 47.63752];
  * var projected = merc.forward(long_lat_coords);
  */
