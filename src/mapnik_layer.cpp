@@ -24,7 +24,9 @@ Napi::Object Layer::Initialize(Napi::Env env, Napi::Object exports, napi_propert
             InstanceAccessor<&Layer::minimum_scale_denominator, &Layer::minimum_scale_denominator>("minimum_scale_denominator", prop_attr),
             InstanceAccessor<&Layer::maximum_scale_denominator, &Layer::maximum_scale_denominator>("maximum_scale_denominator", prop_attr),
             InstanceAccessor<&Layer::queryable, &Layer::queryable>("queryable", prop_attr),
-            InstanceAccessor<&Layer::clear_label_cache, &Layer::clear_label_cache>("clear_label_cache", prop_attr)
+            InstanceAccessor<&Layer::clear_label_cache, &Layer::clear_label_cache>("clear_label_cache", prop_attr),
+            InstanceAccessor<&Layer::opacity, &Layer::opacity>("opacity", prop_attr),
+            InstanceMethod<&Layer::add_layer>("add_layer", prop_attr)
         });
     // clang-format on
     constructor = Napi::Persistent(func);
@@ -309,4 +311,50 @@ Napi::Value Layer::describe(Napi::CallbackInfo const& info)
         }
     }
     return scope.Escape(description);
+}
+
+// opacity
+Napi::Value Layer::opacity(Napi::CallbackInfo const& info)
+{
+    Napi::Env env = info.Env();
+    return Napi::Number::New(env, layer_->get_opacity());
+}
+
+void Layer::opacity(Napi::CallbackInfo const& info, Napi::Value const& value)
+{
+    Napi::Env env = info.Env();
+    if (!value.IsNumber())
+    {
+        Napi::TypeError::New(env, "Must provide a number").ThrowAsJavaScriptException();
+    }
+    else
+    {
+        layer_->set_opacity(value.As<Napi::Number>().DoubleValue());
+    }
+}
+
+/**
+ * Add a new nested layer to this layer
+ *
+ * @memberof Map
+ * @instance
+ * @name add_layer
+ * @param {mapnik.Layer} new layer
+ */
+
+void Layer::add_layer(Napi::CallbackInfo const& info)
+{
+    Napi::Env env = info.Env();
+    if (!info[0].IsObject())
+    {
+        Napi::TypeError::New(env, "mapnik.Layer expected").ThrowAsJavaScriptException();
+    }
+
+    Napi::Object obj = info[0].As<Napi::Object>();
+    if (!obj.InstanceOf(Layer::constructor.Value()))
+    {
+        Napi::TypeError::New(env, "mapnik.Layer expected").ThrowAsJavaScriptException();
+    }
+    Layer* layer = Napi::ObjectWrap<Layer>::Unwrap(obj);
+    layer_->add_layer(*layer->impl());
 }
